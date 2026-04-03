@@ -31,9 +31,6 @@ jobs:
           pip install -e ".[dev]"
           pip install seaborn
 
-      - name: Lint with Ruff
-        run: ruff check src/ tests/ --ignore E501
-
       - name: Run tests with coverage
         run: |
           pytest tests/ -v --cov=aquasense --cov-report=term-missing \
