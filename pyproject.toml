@@ -2,25 +2,23 @@
 requires      = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
-# ── Project metadata ────────────────────────────────────────────────────────
 [project]
 name        = "aquasense"
-version     = "1.0.0"
-description = "Underwater Sensor Node Monitoring System — ML-powered battery RUL prediction and anomaly detection"
+version     = "2.0.0"
+description = "Energy-Efficient Depth-Aware IoUT Routing Protocol — ML monitoring framework"
 readme      = "README.md"
 license     = { text = "MIT" }
 requires-python = ">=3.9"
 
 keywords = [
-    "underwater", "IoT", "sensor", "battery", "predictive maintenance",
-    "machine learning", "anomaly detection", "time series",
+    "IoUT", "underwater", "sensor", "routing", "clustering",
+    "predictive-maintenance", "machine-learning", "anomaly-detection",
 ]
 
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -38,12 +36,7 @@ dependencies = [
 
 [project.optional-dependencies]
 postgres = ["psycopg2-binary>=2.9"]
-dev      = [
-    "pytest>=7.4",
-    "pytest-cov>=4.1",
-    "ruff>=0.1",
-    "mypy>=1.5",
-]
+dev      = ["pytest>=7.4", "pytest-cov>=4.1"]
 
 [project.scripts]
 aquasense = "aquasense.pipeline:main"
@@ -53,21 +46,9 @@ Homepage   = "https://github.com/muhammad-hassaan-naeem/aquasense"
 Repository = "https://github.com/muhammad-hassaan-naeem/aquasense"
 Issues     = "https://github.com/muhammad-hassaan-naeem/aquasense/issues"
 
-# ── Tool config ─────────────────────────────────────────────────────────────
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths    = ["tests"]
-addopts      = "-v --tb=short"
-
-[tool.ruff]
-line-length = 100
-target-version = "py39"
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP"]
-
-[tool.mypy]
-python_version = "3.9"
-ignore_missing_imports = true
+testpaths = ["tests"]
+addopts   = "-v --tb=short"
