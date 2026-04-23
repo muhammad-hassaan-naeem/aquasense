@@ -293,3 +293,143 @@ class TestEnergyModel:
         df   = _small_df(10, 5)
         snap = df[df["timestep"] == 0]
         assert estimate_round_energy(snap)["total_uJ"] >= 0
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# phase1/argo_connector.py
+# ══════════════════════════════════════════════════════════════════════════
+
+class TestArgoConnector:
+    @pytest.fixture(scope="class")
+    def argo_df(self, tmp_path_factory):
+        from aquasense.phase1.argo_connector import ArgoConnector
+        tmp = tmp_path_factory.mktemp("argo")
+        conn = ArgoConnector(cache_dir=tmp)
+        return conn.get_data(n_floats=10, force_synthetic=True)
+
+    def test_shape(self, argo_df):
+        assert len(argo_df) > 0
+        assert argo_df['node_id'].nunique() == 10
+
+    def test_columns(self, argo_df):
+        required = {"node_id","timestep","depth_m","battery_voltage",
+                    "rul_hours","is_anomaly","data_source"}
+        assert required.issubset(argo_df.columns)
+
+    def test_data_source_label(self, argo_df):
+        assert argo_df['data_source'].iloc[0] in ('argo_real','synthetic_argo')
+
+    def test_no_nulls_key_cols(self, argo_df):
+        for col in ["depth_m","battery_voltage","rul_hours"]:
+            assert argo_df[col].notnull().all(), f"nulls in {col}"
+
+    def test_rul_non_negative(self, argo_df):
+        assert (argo_df['rul_hours'] >= 0).all()
+
+    def test_battery_in_range(self, argo_df):
+        assert argo_df['battery_voltage'].between(2.4, 4.3).all()
+
+    def test_cluster_labels(self, argo_df):
+        assert set(argo_df['depth_cluster'].unique()).issubset(
+            {'shallow','mid','deep'})
+
+    def test_summary_method(self, argo_df, tmp_path_factory):
+        from aquasense.phase1.argo_connector import ArgoConnector
+        tmp  = tmp_path_factory.mktemp("argo2")
+        conn = ArgoConnector(cache_dir=tmp)
+        s    = conn.summary(argo_df)
+        assert len(s) == argo_df['node_id'].nunique()
+        assert 'final_rul' in s.columns
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# phase1/lstm_model.py
+# ══════════════════════════════════════════════════════════════════════════
+
+class TestTemporalRULModel:
+    @pytest.fixture(scope="class")
+    def fitted_tm(self):
+        from aquasense.phase1.lstm_model import TemporalRULModel
+        df  = _small_df(n_nodes=20, n_timesteps=30)
+        tm  = TemporalRULModel(window=5, n_estimators=30)
+        tm.fit(df)
+        return tm, df
+
+    def test_metrics_set(self, fitted_tm):
+        tm, _ = fitted_tm
+        assert "mae" in tm.metrics_ and "r2" in tm.metrics_
+
+    def test_r2_positive(self, fitted_tm):
+        tm, _ = fitted_tm
+        assert tm.metrics_["r2"] > 0
+
+    def test_predict_non_negative(self, fitted_tm):
+        tm, df = fitted_tm
+        preds = tm.predict(df)
+        assert (preds >= 0).all()
+
+    def test_predict_trend_shape(self, fitted_tm):
+        tm, df = fitted_tm
+        valid = df.groupby("node_id")["timestep"].count()
+        node  = int(valid[valid > tm.window + 2].index[0])
+        trend = tm.predict_trend(df, node)
+        assert len(trend) > 0
+        assert "true_rul" in trend.columns and "predicted_rul" in trend.columns
+
+    def test_save_load(self, fitted_tm, tmp_path):
+        from aquasense.phase1.lstm_model import TemporalRULModel
+        tm, df = fitted_tm
+        path   = tmp_path / "tm.pkl"
+        tm.save(path)
+        loaded = TemporalRULModel.load(path)
+        assert loaded.window == tm.window
+        np.testing.assert_allclose(
+            tm.predict(df), loaded.predict(df), rtol=1e-4)
+
+    def test_repr(self, fitted_tm):
+        tm, _ = fitted_tm
+        assert "TemporalRULModel" in repr(tm)
+        assert "MAE" in repr(tm)
+
+
+class TestBuildSequences:
+    def test_sequence_count(self):
+        from aquasense.phase1.lstm_model import build_sequences
+        df = _small_df(n_nodes=5, n_timesteps=20)
+        X, y = build_sequences(df, window=5)
+        # Each node contributes (20-5) = 15 sequences
+        assert len(X) == 5 * 15
+
+    def test_sequence_width(self):
+        from aquasense.phase1.lstm_model import build_sequences
+        from aquasense.config import FEATURES
+        df = _small_df(n_nodes=3, n_timesteps=15)
+        X, y = build_sequences(df, window=5)
+        assert X.shape[1] == 5 * len(FEATURES)
+
+    def test_y_non_negative(self):
+        from aquasense.phase1.lstm_model import build_sequences
+        df = _small_df(n_nodes=3, n_timesteps=15)
+        _, y = build_sequences(df, window=5)
+        assert (y >= 0).all()
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# phase1/comparison.py
+# ══════════════════════════════════════════════════════════════════════════
+
+class TestEvaluateModel:
+    def test_returns_required_keys(self):
+        from aquasense.phase1.lstm_model import evaluate_model
+        y_true = np.array([100, 200, 300, 150, 250], dtype=float)
+        y_pred = np.array([ 95, 210, 290, 160, 240], dtype=float)
+        result = evaluate_model(y_true, y_pred, "TestModel")
+        for k in ["model","mae","rmse","r2","mape_pct","within_10pct"]:
+            assert k in result
+
+    def test_perfect_prediction_r2(self):
+        from aquasense.phase1.lstm_model import evaluate_model
+        y = np.linspace(10, 500, 100)
+        r = evaluate_model(y, y, "Perfect")
+        assert r["r2"] == pytest.approx(1.0, abs=1e-5)
+        assert r["mae"] == pytest.approx(0.0, abs=1e-5)
