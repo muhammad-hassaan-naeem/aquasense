@@ -200,7 +200,7 @@ def build_dashboard(
     _panel_feature_importance(fig.add_subplot(gs[3, 2:]), feature_importances)
 
     fig.text(0.5, 0.003,
-             "AquaSense v2.0  ·  RF RUL Regressor + Isolation Forest + "
+             "AquaSense v2.1.0  ·  RF RUL Regressor + Isolation Forest + "
              "Depth-Aware CH Selection  ·  IoUT Research Framework",
              ha="center", color=PALETTE["muted"], fontsize=7,
              fontfamily="monospace")
