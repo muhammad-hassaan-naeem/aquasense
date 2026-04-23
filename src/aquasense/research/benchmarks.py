@@ -94,7 +94,7 @@ def _base_fig(title: str, w: float = 10, h: float = 5):
 def plot_alive_nodes(results: dict[str, pd.DataFrame]) -> Path:
     """
     Line chart: number of alive nodes over simulation rounds.
-    Corresponds to Figure 4.x in the thesis (Network Lifetime).
+    Corresponds to Figure 4.x in the research (Network Lifetime).
     """
     fig, ax = _base_fig("NETWORK  LIFETIME  —  Alive Nodes per Round")
     for protocol, rdf in results.items():
@@ -120,7 +120,7 @@ def plot_alive_nodes(results: dict[str, pd.DataFrame]) -> Path:
 def plot_energy_consumption(results: dict[str, pd.DataFrame]) -> Path:
     """
     Bar chart: cumulative energy consumed per protocol.
-    Corresponds to Figure 4.x in the thesis (Energy Efficiency).
+    Corresponds to Figure 4.x in the research (Energy Efficiency).
     """
     protocols = list(results.keys())
     totals    = [results[p]["energy_consumed"].sum() for p in protocols]
