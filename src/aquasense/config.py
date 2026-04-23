@@ -80,3 +80,9 @@ CLUSTER_COLORS = {
     "deep":    PALETTE["deep"],
 }
 KM_COLORS = ["#00c8ff", "#00ffd5", "#ff6b35"]
+
+# ── Phase 1 ────────────────────────────────────────────────────────────────
+LSTM_WINDOW_SIZE   = int(os.getenv("AQUASENSE_LSTM_WINDOW", "10"))
+LSTM_N_ESTIMATORS  = int(os.getenv("AQUASENSE_LSTM_TREES",  "200"))
+ARGO_N_FLOATS      = int(os.getenv("AQUASENSE_ARGO_FLOATS", "30"))
+ARGO_USE_CACHE     = os.getenv("AQUASENSE_ARGO_CACHE", "true").lower() == "true"
