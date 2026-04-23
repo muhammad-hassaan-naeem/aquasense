@@ -13,6 +13,6 @@ visualise   – 8-panel Matplotlib monitoring dashboard
 pipeline    – End-to-end orchestrator + CLI entry-point
 """
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __author__  = "Muhammad Hassaan Naeem"
 __license__ = "MIT"
