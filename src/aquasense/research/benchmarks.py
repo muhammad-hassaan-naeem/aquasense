@@ -1,7 +1,7 @@
 """
 research/benchmarks.py
 -----------------------
-Benchmark comparison framework for the thesis Chapter 4 experiments.
+Benchmark comparison framework for the research Chapter 4 experiments.
 
 Compares four routing protocols:
     1. Random          – equal weights (baseline)
@@ -147,7 +147,7 @@ def plot_energy_consumption(results: dict[str, pd.DataFrame]) -> Path:
 def plot_delivery_ratio(results: dict[str, pd.DataFrame]) -> Path:
     """
     Line chart: packet delivery ratio over rounds.
-    Corresponds to Figure 4.x in the thesis (Reliability).
+    Corresponds to Figure 4.x in the research (Reliability).
     """
     fig, ax = _base_fig("PACKET  DELIVERY  RATIO  OVER  ROUNDS")
     for protocol, rdf in results.items():
