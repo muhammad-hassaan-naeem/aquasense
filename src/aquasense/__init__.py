@@ -1,13 +1,18 @@
 """
-research/
----------
-Thesis research modules for:
-"Energy-Efficient Depth-Aware Clustering-Based Routing Protocol
- for Internet of Underwater Things (IoUT) Using Depth Sensors"
+AquaSense — Underwater Sensor Node Monitoring & Routing System
+==============================================================
+Simulation framework for Energy-Efficient Depth-Aware Clustering-Based
+Routing Protocol for Internet of Underwater Things (IoUT).
 
-Author : Muhammad Hassaan Naeem
-Modules:
-    routing_protocol  – Proposed CH selection + multi-hop routing
-    energy_model      – Acoustic energy consumption model
-    benchmarks        – Protocol comparison framework
+Modules
+-------
+simulate    – Synthetic sensor-node telemetry generation
+database    – SQLite / PostgreSQL persistence layer
+models      – RUL Regressor · Anomaly Detector · Depth Clusterer
+visualise   – 8-panel Matplotlib monitoring dashboard
+pipeline    – End-to-end orchestrator + CLI entry-point
 """
+
+__version__ = "2.0.0"
+__author__  = "Muhammad Hassaan Naeem"
+__license__ = "MIT"
