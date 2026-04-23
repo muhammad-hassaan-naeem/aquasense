@@ -349,4 +349,3 @@ def protocol_summary(rounds_df: pd.DataFrame) -> dict:
         "final_alive_nodes"   : int(last["alive_nodes"]),
         "avg_rul_final"       : round(float(last["avg_rul"]), 2),
     }
-
