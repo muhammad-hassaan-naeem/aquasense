@@ -35,12 +35,11 @@ jobs:
           pytest tests/ -v --cov=aquasense --cov-report=term-missing \
                  --cov-report=xml --cov-fail-under=40
 
-  dashboard-smoke:
-    name: Dashboard smoke test
+  smoke:
+    name: Full pipeline smoke test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -49,15 +48,19 @@ jobs:
       - name: Install
         run: |
           pip install --upgrade pip setuptools wheel
-          pip install -e .
-          pip install seaborn
+          pip install -e . seaborn
 
-      - name: Run pipeline
+      - name: Core pipeline
         run: python -m aquasense.pipeline --nodes 20 --timesteps 20 --seed 1
         env:
           MPLBACKEND: Agg
 
-      - name: Run with benchmarks
+      - name: Benchmarks
         run: python -m aquasense.pipeline --nodes 20 --timesteps 20 --bench --no-dashboard
+        env:
+          MPLBACKEND: Agg
+
+      - name: Phase 1 (synthetic ARGO + LSTM)
+        run: python -m aquasense.pipeline --nodes 30 --timesteps 25 --phase1 --no-dashboard
         env:
           MPLBACKEND: Agg
