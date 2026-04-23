@@ -1,9 +1,9 @@
+from __future__ import annotations
 name=tests/test_visualise.py
 """
 tests/test_visualise.py  –  Tests for visualization module.
 Run with:  pytest tests/test_visualise.py -v --cov=aquasense.visualise
 """
-from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
