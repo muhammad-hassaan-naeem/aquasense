@@ -1,16 +1,15 @@
-# Thesis — Code Mapping
+# Research — Code Mapping
 
-**Thesis Title:** Energy-Efficient Depth-Aware Clustering-Based Routing Protocol  
+**Research Title:** Energy-Efficient Depth-Aware Clustering-Based Routing Protocol  
 for Internet of Underwater Things (IoUT) Using Depth Sensors
 
-**Author:** Muhammad Hassaan Naeem  
-**Institution:** COMSATS UNIVERSITY
+**Author:** Muhammad Hassaan Naeem
 
 ---
 
 ## Chapter → Module Mapping
 
-| Thesis Chapter | Module | Key Functions |
+| Research Chapter | Module | Key Functions |
 |---|---|---|
 | Ch. 1 — IoUT Architecture | `src/aquasense/simulate.py` | `simulate_sensor_data()` |
 | Ch. 2 — Clustering Review | `src/aquasense/models.py` | `DepthClusterer` |
@@ -66,7 +65,7 @@ Default weights (proposed): w_e=0.5, w_d=0.3, w_l=0.2
 
 ---
 
-## Reproducing Thesis Results
+## Reproducing Research Results
 
 ```bash
 # Install
