@@ -3,7 +3,7 @@
 [![CI](https://github.com/muhammad-hassaan-naeem/aquasense/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammad-hassaan-naeem/aquasense/actions)
 [![Python](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue?logo=python)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-91%20passed-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-111%20passed-brightgreen)](tests/)
 [![Version](https://img.shields.io/badge/version-2.1.0-blueviolet)](pyproject.toml)
 
 > **ML-powered battery life prediction, anomaly detection, and energy-efficient routing for Internet of Underwater Things (IoUT) sensor networks — with real ARGO ocean data integration and temporal deep learning models.**
