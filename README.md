@@ -288,7 +288,7 @@ comp.plot_comparison()
 | Random | 0.33 | 0.33 | 0.34 | Equal-weight baseline |
 | LEACH | 1.00 | 0.00 | 0.00 | Energy-only CH selection |
 | DBR | 0.00 | 1.00 | 0.00 | Depth-only (Depth-Based Routing) |
-| **Proposed** | **0.50** | **0.30** | **0.20** | **This thesis — balanced fitness** |
+| **Proposed** | **0.50** | **0.30** | **0.20** | **This research — balanced fitness** |
 
 Generated output figures:
 
@@ -328,9 +328,9 @@ AquaSense ships as a fully reproducible simulation environment: one `pip install
 
 ---
 
-## 📚 Thesis — Code Mapping
+## 📚 Research — Code Mapping
 
-| Thesis Chapter | Module | Key Function |
+| Research Chapter | Module | Key Function |
 |---|---|---|
 | Ch. 1 — IoUT Architecture | `simulate.py` | `simulate_sensor_data()` |
 | Ch. 2 — Clustering Review | `models.py` | `DepthClusterer` |
@@ -342,7 +342,7 @@ AquaSense ships as a fully reproducible simulation environment: one `pip install
 | Ch. 4 — LSTM Comparison | `phase1/models/lstm_rul.py` | `LSTMRULPredictor` |
 | Ch. 4 — Real Data Validation | `phase1/data/argo_connector.py` | `ArgoConnector` |
 
-See [`docs/thesis_connection.md`](docs/thesis_connection.md) for the full chapter-by-chapter breakdown.
+See [`docs/research_connection.md`](docs/research_connection.md) for the full chapter-by-chapter breakdown.
 
 ---
 
