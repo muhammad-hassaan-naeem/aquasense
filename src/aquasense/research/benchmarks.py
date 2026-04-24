@@ -135,6 +135,7 @@ def plot_energy_consumption(results: dict[str, pd.DataFrame]) -> Path:
                 f"{val:.1f}", ha="center", color=PALETTE["text"],
                 fontsize=8, fontweight="bold")
     ax.set_ylabel("Total Energy (μJ)", fontsize=9)
+    ax.set_xticks(range(len(protocols)))
     ax.set_xticklabels(protocols, color=PALETTE["text"], fontsize=8)
 
     out = FIGURES_DIR / "energy_consumption_comparison.png"
