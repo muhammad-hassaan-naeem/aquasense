@@ -116,7 +116,8 @@ class NOAAConnector:
 
         if cache_file.exists():
             log.info("Loading cached WOA data from %s", cache_file)
-            return pd.read_csv(cache_file)
+            df = pd.read_csv(cache_file)
+        return df[df["depth_m"] <= max_depth].reset_index(drop=True)
 
         log.info("Generating WOA-based profiles for %s …", region)
         df = self._generate_woa_profiles(
