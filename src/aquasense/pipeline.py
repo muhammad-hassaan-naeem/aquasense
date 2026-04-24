@@ -67,7 +67,7 @@ def main() -> None:
     wall = time.perf_counter()
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
-    print("  ║     AQUASENSE  v2.1.0  ·  IoUT Research Framework      ║")
+    print("  ║     AQUASENSE  v2.1.0  ·  IoUT Research Framework    ║")
     print("  ╚══════════════════════════════════════════════════════╝")
     print()
 
