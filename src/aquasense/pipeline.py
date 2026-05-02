@@ -150,9 +150,9 @@ def main() -> None:
 
         conn_argo = ArgoConnector()
         argo_df   = conn_argo.load_or_fetch(
-        n_floats=args.argo_floats,
-        region="global",
-        force_download=args.argo_real,
+         n_floats=args.argo_floats,
+         region="global",
+         force_download=args.argo_real,
         )
         log.info("        ARGO data: %s rows, %d floats, source=%s",
                  f"{len(argo_df):,}",
