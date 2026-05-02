@@ -145,7 +145,7 @@ def main() -> None:
         log.info("Step 8  · Running Phase 1 (ARGO + LSTM comparison) …")
         t0 = time.perf_counter()
 
-        from .phase1.argo_connector import ArgoConnector
+        from .phase1.data.argo_connector import ArgoConnector
         from .phase1.comparison import run_phase1_comparison
 
         conn_argo = ArgoConnector()
