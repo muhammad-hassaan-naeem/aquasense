@@ -149,10 +149,10 @@ def main() -> None:
         from .phase1.comparison import run_phase1_comparison
 
         conn_argo = ArgoConnector()
-        argo_df   = conn_argo.get_data(
-            n_floats=args.argo_floats,
-            use_cache=not args.argo_real,
-            force_synthetic=not args.argo_real,
+        argo_df   = conn_argo.load_or_fetch(
+        n_floats=args.argo_floats,
+        region="global",
+        force_download=args.argo_real,
         )
         log.info("        ARGO data: %s rows, %d floats, source=%s",
                  f"{len(argo_df):,}",
