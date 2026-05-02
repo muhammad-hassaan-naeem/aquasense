@@ -1,13 +1,11 @@
 """
-phase1/
--------
-Phase 1 Research Enhancements for AquaSense v2.0
-
-Modules
--------
-argo_connector   -- ARGO float real ocean data fetcher & adapter
-lstm_model       -- LSTM-based RUL predictor (comparison vs Random Forest)
-comparison       -- RF vs LSTM benchmark with publication-quality figures
+phase1 — Real data integration and LSTM modeling for AquaSense Phase 1.
 """
+from __future__ import annotations
 
-__all__ = ["argo_connector", "lstm_model", "comparison"]
+__all__ = [
+    "ArgoConnector",
+    "NOAAConnector",
+    "LSTMRULPredictor",
+    "ModelComparison",
+]
