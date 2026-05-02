@@ -37,8 +37,16 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import torch
-import torch.nn as nn
+
+try:
+    import torch
+    import torch.nn as nn
+except ModuleNotFoundError as _torch_err:  # pragma: no cover
+    raise ModuleNotFoundError(
+        "PyTorch is required for the LSTM RUL predictor but is not installed. "
+        "Install it with:  pip install 'aquasense[torch]'"
+    ) from _torch_err
+
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
