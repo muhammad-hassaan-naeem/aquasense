@@ -247,19 +247,32 @@ class TestBuildDashboard:
         assert result.exists()
         assert result.suffix == ".png"
 
-    def test_dashboard_all_clusters_present(self, base_df):
-        """
-        Dashboard should work even when not all three depth clusters appear
-        in a small simulated dataset — no KeyError should be raised.
-        """
-        from aquasense.visualise import build_dashboard
-        import tempfile, os
-        df        = _small_df(n_nodes=5, n_timesteps=10)
-        latest_df = _latest(df)
-        stats     = _cluster_stats(df)
-        reg       = _trained_reg(df)
-        anom_df   = _anomaly_df(df)
-        km_df_    = _km_df(df)
+ def test_dashboard_all_clusters_present(self, base_df):
+    """
+    Dashboard should work even when not all three depth clusters appear
+    in a small simulated dataset — no KeyError should be raised.
+    """
+    from aquasense.visualise import build_dashboard
+    import tempfile
+    from pathlib import Path
+    
+    df        = _small_df(n_nodes=5, n_timesteps=10)
+    latest_df = _latest(df)
+    stats     = _cluster_stats(df)
+    reg       = _trained_reg(df)
+    anom_df   = _anomaly_df(df)
+    km_df_    = _km_df(df)
+
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "d.png"
+        build_dashboard(
+            df=df, latest_df=latest_df, cluster_stats=stats,
+            y_test=reg._y_test, y_pred=reg._y_pred,
+            anomaly_df=anom_df, km_df=km_df_,
+            feature_importances=reg.feature_importances_,
+            output_path=out,
+        )
+        assert out.exists()
 
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "d.png"
