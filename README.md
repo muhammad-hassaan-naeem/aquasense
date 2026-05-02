@@ -114,8 +114,11 @@ aquasense/
 git clone https://github.com/muhammad-hassaan-naeem/aquasense.git
 cd aquasense
 
-# Install (core)
+# Install core (simulation, ML, dashboard, routing — no PyTorch)
 pip install -e .
+
+# Install with PyTorch for Phase 1 LSTM support
+pip install -e ".[torch]"
 
 # Run core pipeline — dashboard + monitoring
 python -m aquasense.pipeline
@@ -124,6 +127,7 @@ python -m aquasense.pipeline
 python -m aquasense.pipeline --bench
 
 # Run Phase 1 — ARGO real data + LSTM RUL comparison (synthetic fallback if offline)
+# Requires: pip install -e ".[torch]"
 python -m aquasense.pipeline --phase1
 
 # Run Phase 1 with live ARGO API fetch (requires internet connection)
@@ -226,6 +230,8 @@ print(f"Absorption @300m: {alpha:.4f} dB/km")
 ## 🌍 Phase 1 — Real Ocean Data + LSTM
 
 Phase 1 validates the simulation against real oceanographic measurements and extends RUL prediction with a temporal LSTM that captures degradation trends across consecutive timesteps — something snapshot-based Random Forest cannot do.
+
+> **Requires PyTorch:** `pip install -e ".[torch]"` or `pip install -e ".[phase1]"`
 
 ### ARGO Float Data
 
@@ -349,11 +355,16 @@ See [`docs/research_connection.md`](docs/research_connection.md) for the full ch
 ## 🧪 Tests
 
 ```bash
+# Core tests (no PyTorch needed)
 pip install -e ".[dev]"
+pytest tests/ -v --cov=aquasense
+
+# Full test suite including LSTM tests
+pip install -e ".[dev,torch]"
 pytest tests/ -v --cov=aquasense
 ```
 
-**111 tests** — 1 failed, 110 passed before v2.1 fixes; now 111/111 pass.
+**111 tests, 111 passed** — 62% coverage.
 
 | File | Tests | What is covered |
 |---|---|---|
@@ -436,11 +447,16 @@ CREATE TABLE sensor_logs (
 ## 📦 Installation Options
 
 ```bash
-pip install -e .                  # Core — simulation, ML, dashboard, routing
-pip install -e ".[postgres]"      # + PostgreSQL (psycopg2-binary)
-pip install -e ".[netcdf]"        # + NetCDF4 (raw ARGO .nc file support)
-pip install -e ".[dev]"           # + pytest, pytest-cov, coverage
+pip install -e .                   # Core — simulation, ML, dashboard, routing (no PyTorch)
+pip install -e ".[torch]"          # + PyTorch (required for LSTM / Phase 1)
+pip install -e ".[phase1]"         # Alias for [torch] — full Phase 1 LSTM stack
+pip install -e ".[postgres]"       # + PostgreSQL (psycopg2-binary)
+pip install -e ".[netcdf]"         # + NetCDF4 (raw ARGO .nc file support)
+pip install -e ".[dev]"            # + pytest, pytest-cov (core tests, no PyTorch)
+pip install -e ".[dev,torch]"      # + pytest + PyTorch (full test suite)
 ```
+
+> **Why is PyTorch optional?** PyTorch pre-built wheels are unavailable for Python 3.9 on PyPI, which caused CI failures across the entire matrix. Moving it to an optional extra keeps `pip install -e .` lightweight and fast for all Python versions, while users who need the LSTM predictor can opt in explicitly with `.[torch]`.
 
 ---
 
