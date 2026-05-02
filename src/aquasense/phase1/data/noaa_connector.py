@@ -112,18 +112,40 @@ class NOAAConnector:
         -------
         pd.DataFrame  in AquaSense schema
         """
-        cache_file = self.cache_dir / f"woa_{region}_{n_profiles}profiles.csv"
+        # FIX #1: Include max_depth in cache key to avoid cache collisions
+        cache_file = self.cache_dir / f"woa_{region}_{n_profiles}profiles_depth{int(max_depth)}.csv"
 
+        # FIX #2: Add validation when loading from cache
         if cache_file.exists():
             log.info("Loading cached WOA data from %s", cache_file)
-            df = pd.read_csv(cache_file)
-            return df[df["depth_m"] <= max_depth].reset_index(drop=True)
+            try:
+                df = pd.read_csv(cache_file)
+                if df is None or len(df) == 0:
+                    log.warning("Cached file was empty; regenerating …")
+                    cache_file.unlink()  # Delete corrupted cache
+                else:
+                    log.info("Loaded %d profiles from cache", len(df))
+                    return df
+            except Exception as e:
+                log.warning("Failed to read cache (%s); regenerating …", e)
+                try:
+                    cache_file.unlink()  # Clean up corrupted file
+                except:
+                    pass
 
-        log.info("Generating WOA-based profiles for %s …", region)
+        log.info("Generating WOA-based profiles for %s (max_depth=%.0f) …", region, max_depth)
         df = self._generate_woa_profiles(
             region=region, n_profiles=n_profiles, max_depth=max_depth)
+        
+        # FIX #2b: Validate generated data
+        if df is None or len(df) == 0:
+            raise ValueError(
+                f"Failed to generate WOA profiles for region={region}, "
+                f"n_profiles={n_profiles}, max_depth={max_depth}"
+            )
+        
         df.to_csv(cache_file, index=False)
-        log.info("Saved %s WOA profiles → %s", f"{len(df):,}", cache_file)
+        log.info("Saved %d WOA profiles → %s", len(df), cache_file)
         return df
 
     def basin_statistics(self) -> pd.DataFrame:
@@ -173,11 +195,27 @@ class NOAAConnector:
     ) -> pd.DataFrame:
         """Generate profiles using WOA23 climatological statistics."""
         if region not in OCEAN_BASINS:
+            log.warning("Region '%s' not found; using 'global'", region)
             region = "global"
         lat_min, lat_max, lon_min, lon_max = OCEAN_BASINS[region]
 
+        # FIX #3: Validate input parameters
+        if n_profiles <= 0:
+            raise ValueError(f"n_profiles must be > 0, got {n_profiles}")
+        if max_depth <= 0:
+            raise ValueError(f"max_depth must be > 0, got {max_depth}")
+
         records  = []
         depths   = [d for d in WOA_DEPTH_LEVELS if d <= max_depth]
+
+        # FIX #3b: Handle case where no depths are available
+        if not depths:
+            log.error("No valid depths for max_depth=%.0f; using default range", max_depth)
+            depths = [d for d in WOA_DEPTH_LEVELS if d <= 1000]
+            if not depths:
+                raise ValueError(
+                    f"WOA_DEPTH_LEVELS is empty or all values exceed max_depth={max_depth}"
+                )
 
         for node_id in range(n_profiles):
             lat     = self.rng.uniform(lat_min, lat_max)
@@ -222,7 +260,16 @@ class NOAAConnector:
                     "latitude"         : round(lat,             3),
                 })
 
-        return pd.DataFrame(records)
+        # FIX #3c: Validate output
+        if not records:
+            raise ValueError(
+                f"No records generated! region={region}, n_profiles={n_profiles}, "
+                f"max_depth={max_depth}, n_depths={len(depths)}"
+            )
+
+        df = pd.DataFrame(records)
+        log.debug("Generated %d profiles with %d total records", n_profiles, len(df))
+        return df
 
     @staticmethod
     def _woa_temperature(
